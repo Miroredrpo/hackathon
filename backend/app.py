@@ -3,7 +3,6 @@ from functools import wraps
 from flask import Flask, jsonify, request, send_from_directory, session, render_template
 from dotenv import load_dotenv
 from supabase import create_client, Client
-from werkzeug.security import check_password_hash
 from datetime import datetime, timedelta, timezone
 
 # Load environment variables
@@ -26,16 +25,16 @@ supabase: Client = create_client(url, key)
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if 'admin_user' not in session:
+        if 'admin_email' not in session:
             return jsonify({'error': 'Authentication required'}), 401
         return f(*args, **kwargs)
     return decorated_function
 
 def log_audit(action_type, details):
-    admin_username = session.get('admin_user', 'unknown')
+    admin_email = session.get('admin_email', 'unknown')
     try:
         supabase.table('audit_logs').insert({
-            'admin_username': admin_username,
+            'admin_username': admin_email,
             'action_type': action_type,
             'details': details
         }).execute()
@@ -60,36 +59,31 @@ def admin_page():
 @app.route('/admin/api/auth/login', methods=['POST'])
 def login():
     data = request.get_json()
-    username = data.get('username')
+    email = data.get('email')
     password = data.get('password')
 
-    if not username or not password:
-        return jsonify({'error': 'Username and password required'}), 400
+    if not email or not password:
+        return jsonify({'error': 'Email and password required'}), 400
 
     try:
-        response = supabase.table('admins').select('username, password_hash').eq('username', username).single().execute()
-        admin = response.data
-
-        if admin and check_password_hash(admin['password_hash'], password):
-            session['admin_user'] = admin['username']
-            log_audit('admin_login', {'username': username})
-            return jsonify({'message': 'Login successful'}), 200
-        else:
-            return jsonify({'error': 'Invalid credentials'}), 401
+        response = supabase.auth.sign_in_with_password({"email": email, "password": password})
+        session['admin_email'] = response.user.email
+        log_audit('admin_login', {'email': email})
+        return jsonify({'message': 'Login successful'}), 200
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Invalid credentials'}), 401
 
 @app.route('/admin/api/auth/logout', methods=['POST'])
 @admin_required
 def logout():
-    username = session.pop('admin_user', None)
-    log_audit('admin_logout', {'username': username})
+    email = session.pop('admin_email', None)
+    log_audit('admin_logout', {'email': email})
     return jsonify({'message': 'Logout successful'}), 200
 
 @app.route('/admin/api/auth/status', methods=['GET'])
 def auth_status():
-    if 'admin_user' in session:
-        return jsonify({'logged_in': True, 'username': session['admin_user']})
+    if 'admin_email' in session:
+        return jsonify({'logged_in': True, 'email': session['admin_email']})
     return jsonify({'logged_in': False})
 
 
@@ -142,20 +136,13 @@ def manage_config():
     if request.method == 'POST':
         data = request.get_json()
 
-        # If the timer is being started, calculate the end time on the server
         if data.get('timer_state') == 'running':
             try:
-                # Fetch the current remaining duration
                 config_response = supabase.table('event_config').select('timer_remaining', 'timer_duration_seconds').eq('id', 1).single().execute()
                 current_config = config_response.data
-
-                # Use remaining time if available, otherwise use the full duration
                 duration_seconds = current_config.get('timer_remaining', current_config.get('timer_duration_seconds', 0))
-
-                # Calculate the end timestamp
                 ends_at = datetime.now(timezone.utc) + timedelta(seconds=duration_seconds)
                 data['timer_ends_at'] = ends_at.isoformat()
-
             except Exception as e:
                 return jsonify({'error': f"Error calculating timer end time: {str(e)}"}), 500
 

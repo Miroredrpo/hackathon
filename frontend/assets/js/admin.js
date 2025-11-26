@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- API Client ---
     // A simple wrapper for jQuery AJAX calls
     const apiClient = {
-        login: (username, password) => $.post('/admin/api/auth/login', JSON.stringify({ username, password }), null, 'json'),
+        login: (email, password) => $.post('/admin/api/auth/login', JSON.stringify({ email, password }), null, 'json'),
         logout: () => $.post('/admin/api/auth/logout'),
         getStatus: () => $.get('/admin/api/auth/status'),
 
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function initAuth() {
         apiClient.getStatus().done(res => {
             if (res.logged_in) {
-                showDashboard(res.username);
+                showDashboard(res.email);
             } else {
                 showLoginForm();
             }
@@ -62,8 +62,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 <h2 class="text-2xl font-bold mb-4">Admin Login</h2>
                 <form id="login-form">
                     <div class="mb-4">
-                        <label for="username" class="block mb-2">Username</label>
-                        <input type="text" id="username" class="w-full bg-gray-800 border border-gray-600 rounded p-2" required>
+                        <label for="email" class="block mb-2">Email</label>
+                        <input type="email" id="email" class="w-full bg-gray-800 border border-gray-600 rounded p-2" required>
                     </div>
                     <div class="mb-4">
                         <label for="password" class="block mb-2">Password</label>
@@ -79,9 +79,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         $('#login-form').on('submit', e => {
             e.preventDefault();
-            const username = $('#username').val();
+            const email = $('#email').val();
             const password = $('#password').val();
-            apiClient.login(username, password)
+            apiClient.login(email, password)
                 .done(() => {
                     window.location.reload();
                 })
@@ -98,12 +98,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Dashboard Rendering and Logic ---
-    function renderDashboard(username) {
+    function renderDashboard(email) {
         dashboardContainer.innerHTML = `
             <div class="flex justify-between items-center mb-6">
                 <h1 class="text-3xl">Admin Dashboard</h1>
                 <div>
-                    <span>Welcome, ${username}</span>
+                    <span>Welcome, ${email}</span>
                     <button id="logout-btn" class="ml-4 bg-red-600 hover:bg-red-700 p-2 rounded">Logout</button>
                 </div>
             </div>

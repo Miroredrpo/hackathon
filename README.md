@@ -29,13 +29,10 @@ This is a full-stack web application designed for hackathons and similar events.
 
 1.  **Create a Supabase Project:** Go to [supabase.com](https://supabase.com), create a new project, and save your project URL, `anon` key, and `service_role` key.
 2.  **Run the SQL Script:** In the Supabase dashboard, go to the "SQL Editor" and run the contents of the `schema.sql` file provided in this repository. This will create all the necessary tables.
-3.  **Create an Admin User:** After setting up your `.env` file (see "Local Development" below), run the provided script to create a secure admin user. from the `backend` directory:
-    ```bash
-    python create_admin.py
-    ```
-    You will be prompted to enter a username and password.
-
-    *Note: This script is provided as a security best practice. It ensures the admin password is securely hashed before being stored in the database.*
+3.  **Create an Admin User:**
+    - In your Supabase project dashboard, go to the "Authentication" section.
+    - Click on "Users" and then click the "Add user" button.
+    - Enter the email and a secure password for your admin user. This is the account you will use to log in to the admin panel.
 4.  **Disable RLS (as per requirements):** For this project, Row Level Security is not used. You can ensure it's disabled on your tables under Authentication -> Policies.
 
 ### 2. Local Development

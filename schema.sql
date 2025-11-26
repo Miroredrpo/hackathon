@@ -1,17 +1,4 @@
--- 1. Admins Table
--- Stores admin credentials.
-CREATE TABLE admins (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  username text UNIQUE NOT NULL,
-  password_hash text NOT NULL,
-  created_at timestamptz DEFAULT now()
-);
-
--- NOTE: An admin user should be created using the `create_admin.py` script,
--- which will securely hash the password.
-
-
--- 2. Teams Table
+-- 1. Teams Table
 -- Stores the list of teams participating in the hackathon.
 CREATE TABLE teams (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -22,7 +9,7 @@ CREATE TABLE teams (
 );
 
 
--- 3. Event Config Table
+-- 2. Event Config Table
 -- A single-row table to store the global state of the event.
 CREATE TABLE event_config (
   id int PRIMARY KEY DEFAULT 1,
@@ -47,7 +34,7 @@ CREATE TABLE event_config (
 INSERT INTO event_config (id) VALUES (1);
 
 
--- 4. Audit Logs Table
+-- 3. Audit Logs Table
 -- Records all actions performed by admins for accountability.
 CREATE TABLE audit_logs (
   id bigserial PRIMARY KEY,
