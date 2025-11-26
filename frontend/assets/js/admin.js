@@ -5,7 +5,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- API Client ---
     // A simple wrapper for jQuery AJAX calls
     const apiClient = {
-        login: (email, password) => $.post('/admin/api/auth/login', JSON.stringify({ email, password }), null, 'json'),
+        login: (email, password) => $.ajax({
+            url: '/admin/api/auth/login',
+            type: 'POST',
+            data: JSON.stringify({ email, password }),
+            contentType: 'application/json'
+        }),
         logout: () => $.post('/admin/api/auth/logout'),
         getStatus: () => $.get('/admin/api/auth/status'),
 
