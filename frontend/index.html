@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hackathon Display</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <style>
+        #three-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+        }
+        .layout-container {
+            position: absolute;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white overflow-hidden">
+    <!-- Three.js background canvas -->
+    <div id="three-bg"></div>
+
+    <!-- Main application container -->
+    <div id="app" class="relative min-h-screen">
+
+        <!-- Timer Container -->
+        <div id="timer-container" class="layout-container" style="top: 5%; left: 5%; width: 30%; height: 40%;">
+            <div class="relative w-full h-full">
+                <svg class="w-full h-full" viewBox="0 0 100 100">
+                    <circle class="text-gray-700" stroke-width="5" cx="50" cy="50" r="45" fill="transparent"></circle>
+                    <circle id="timer-progress-ring" class="text-blue-500" stroke-width="5" cx="50" cy="50" r="45" fill="transparent" stroke-dasharray="283" stroke-dashoffset="283" transform="rotate(-90 50 50)"></circle>
+                </svg>
+                <div id="timer-display" class="absolute inset-0 flex items-center justify-center text-5xl md:text-7xl font-bold">
+                    00:00
+                </div>
+            </div>
+        </div>
+
+        <!-- Team List Container -->
+        <div id="teams-container" class="layout-container bg-black bg-opacity-50 p-4 rounded-lg" style="top: 5%; left: 65%; width: 30%; height: 90%;">
+            <h2 class="text-3xl font-bold mb-4 text-center">Teams</h2>
+            <div id="team-list" class="grid grid-cols-1 gap-2">
+                <!-- Teams will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <!-- Event Note Container -->
+        <div id="note-container" class="layout-container bg-black bg-opacity-50 p-4 rounded-lg" style="top: 85%; left: 5%; width: 50%; height: 10%;">
+            <p id="event-note" class="text-xl">
+                <!-- Event note will be dynamically inserted here -->
+            </p>
+        </div>
+    </div>
+
+    <!-- Audio element for notifications -->
+    <audio id="alert-sound" src="/assets/sounds/alert.mp3" preload="auto"></audio>
+
+    <script>
+        window.SUPABASE_URL = "{{ supabase_url }}";
+        window.SUPABASE_ANON_KEY = "{{ supabase_anon_key }}";
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="/assets/js/app.js"></script>
+</body>
+</html>
