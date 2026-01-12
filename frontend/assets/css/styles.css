@@ -1,0 +1,19 @@
+/* Custom styles for readability and aesthetics */
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@700&display=swap');
+
+#timer-display {
+    font-family: 'Roboto Mono', monospace;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+}
+
+#team-list .bg-gray-800,
+#note-container,
+#teams-container {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+#event-note,
+#team-list div {
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
